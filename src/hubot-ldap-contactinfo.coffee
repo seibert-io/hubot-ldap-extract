@@ -20,7 +20,7 @@ robot = null
 
 
 ldapURL = process.env.LDAP_URL or "ldap://127.0.0.1:1389"
-startTLS = process.env.LDAP_STARTTLS or "0"
+tlsMode = process.env.LDAP_TLSMODE or "plain"
 caCert = process.env.LDAP_CA_CERT or ""
 bindDn = process.env.LDAP_BIND_DN or "cn=root"
 bindSecret = process.env.LDAP_BIND_SECRET or "secret"
@@ -35,7 +35,7 @@ client = LDAP.createClient {
 startTLSIfConfigured = () ->
   deferred = Q.defer()
 
-  if startTLS == "1"
+  if tlsMode == "starttls"
     opts = {
       cas: [caCert]
     }
