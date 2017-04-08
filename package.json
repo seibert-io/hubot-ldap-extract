@@ -1,0 +1,38 @@
+{
+  "name": "hubot-ldap-contactinfo",
+  "version": "0.1.0",
+  "description": "An Hubot script that fetches contact information from an LDAP server",
+  "main": "index.coffee",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/developherr/hubot-ldap-contactinfo.git"
+  },
+  "keywords": [
+    "hubot",
+    "ldap",
+    "contact",
+    "hubot-scripts"
+  ],
+  "author": "developherr <developherr@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/developherr/hubot-ldap-contactinfo/issues"
+  },
+  "homepage": "https://github.com/developherr/hubot-ldap-contactinfo",
+  "dependencies": {
+    "ldapjs": "^1.0.1",
+    "q": "^1.5.0",
+    "milk": "^1.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "coffee-coverage": "^1.0.1",
+    "coffee-script": "^1.12.3",
+    "hubot": "^2.19.0",
+    "hubot-test-helper": "^1.5.1",
+    "mocha": "^3.2.0",
+    "istanbul": "^0.4.5"
+  },
+  "scripts": {
+    "test": "mocha --recursive --compilers 'coffee:coffee-script/register' --require coffee-coverage/register-istanbul test/*.coffee"
+  }
+}
