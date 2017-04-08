@@ -24,7 +24,7 @@ ldapBindDn = process.env.LDAP_BIND_DN or "cn=root"
 ldapBindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-mustacheTpl = process.env.MUSTACHE_TPL or "{{cn}}"
+mustacheTpl = process.env.LDAP_RESULT_MUSTACHE_TPL or "{{cn}}"
 
 client = LDAP.createClient {
   url: ldapURL

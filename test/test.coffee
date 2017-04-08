@@ -7,7 +7,7 @@ helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
 server = LDAP.createServer()
 
 
-process.env['MUSTACHE_TPL'] = '{{cn}}';
+mustacheTpl = process.env['LDAP_RESULT_MUSTACHE_TPL'] = '{{cn}}';
 process.env['LDAP_SEARCH_FILTER'] = "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 
 server.bind 'cn=root', (req, res, next) ->
@@ -71,7 +71,7 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'developherr\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(process.env.MUSTACHE_TPL, mockUsers.developherr.attributes)
+      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes)
 
 
   context 'testing successful search with multiple results', ->
@@ -80,7 +80,7 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'evelop\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(process.env.MUSTACHE_TPL, mockUsers.developherr.attributes) + "\n\n" + Milk.render(process.env.MUSTACHE_TPL, mockUsers.developer.attributes)
+      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes) + "\n\n" + Milk.render(process.env.MUSTACHE_TPL, mockUsers.developer.attributes)
 
 
   context 'testing insuccessful search', ->
