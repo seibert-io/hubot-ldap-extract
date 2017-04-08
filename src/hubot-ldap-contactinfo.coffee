@@ -3,13 +3,13 @@
 #
 # Configuration:
 #   LDAP_URL - the URL to the LDAP server
+#   LDAP_BIND_DN - bind DN used for LDAP connection
+#   LDAP_BIND_SECRET - bind password used for LDAP connection
+#   LDAP_SEARCH_BASE_DN - search base for contact information
+#   LDAP_SEARCH_FILTER - search filter to be used, use {{searchTerm}} as placeholder for the user's search query
+#   MUSTACHE_TPL - Mustache template to be used to present matching information to the user
 # Commands:
-#   hubot what roles does <user> have - Find out what roles a user has
-#   hubot what roles do I have - Find out what roles you have
-#   hubot refreh roles
-#
-# Notes:
-#   * returns bool true or false
+#   hubot contact <search> - Find contacts matching the seach given query
 #
 
 LDAP = require 'ldapjs'
