@@ -1,6 +1,6 @@
 {
   "name": "hubot-ldap-contactinfo",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "An Hubot script that fetches contact information from an LDAP server",
   "main": "index.coffee",
   "repository": {

@@ -2,13 +2,22 @@ Helper = require('hubot-test-helper')
 expect = require('chai').expect
 LDAP = require 'ldapjs'
 Milk = require 'milk'
+fs = require 'fs'
 
 helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
-server = LDAP.createServer()
+
+#server_ = LDAP.createServer()
+
+server = LDAP.createServer({
+  #certificate: fs.readFileSync(__dirname + '/server.crt', 'utf8')
+  #key: fs.readFileSync(__dirname + '/key.pem', 'utf8')
+})
 
 
+#process.env['LDAP_STARTTLS'] = "1"
 mustacheTpl = process.env['LDAP_RESULT_MUSTACHE_TPL'] = '{{cn}}';
 process.env['LDAP_SEARCH_FILTER'] = "(&(objectclass=person)(cn=*{{searchTerm}}*))"
+process.env['LDAP_CA_CERT'] = fs.readFileSync(__dirname + '/server.crt', 'utf8')
 
 server.bind 'cn=root', (req, res, next) ->
   res.end();
@@ -80,7 +89,7 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'evelop\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes) + "\n\n" + Milk.render(process.env.MUSTACHE_TPL, mockUsers.developer.attributes)
+      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes) + "\n\n" + Milk.render(mustacheTpl, mockUsers.developer.attributes)
 
 
   context 'testing insuccessful search', ->

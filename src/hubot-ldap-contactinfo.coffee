@@ -20,8 +20,10 @@ robot = null
 
 
 ldapURL = process.env.LDAP_URL or "ldap://127.0.0.1:1389"
-ldapBindDn = process.env.LDAP_BIND_DN or "cn=root"
-ldapBindSecret = process.env.LDAP_BIND_SECRET or "secret"
+startTLS = process.env.LDAP_STARTTLS or "0"
+caCert = process.env.LDAP_CA_CERT or ""
+bindDn = process.env.LDAP_BIND_DN or "cn=root"
+bindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 mustacheTpl = process.env.LDAP_RESULT_MUSTACHE_TPL or "{{cn}}"
@@ -30,46 +32,67 @@ client = LDAP.createClient {
   url: ldapURL
 }
 
-
-searchLdap = (searchTerm) ->
+startTLSIfConfigured = () ->
   deferred = Q.defer()
 
-  client.bind ldapBindDn, ldapBindSecret, (err) ->
-
-    if err
-      deferred.reject err
-
+  if startTLS == "1"
     opts = {
-      filter: searchFilter.replace "{{searchTerm}}", searchTerm
-      scope: 'sub'
-      paged: false
+      cas: [caCert]
     }
 
-    client.search baseDn, opts, (err, res) ->
+    client.starttls opts, [], (err, res) ->
 
       if err
         deferred.reject err
 
-      entries = []
+      deferred.resolve true
+  else
+    deferred.resolve true
 
-      res.on 'error', (err) ->
+  return deferred.promise
+
+searchLdap = (searchTerm) ->
+  deferred = Q.defer()
+  startTLSIfConfigured()
+  .fail (err) ->
+    console.log client
+    deferred.reject err
+  .then ->
+    client.bind bindDn, bindSecret, (err) ->
+
+      if err
         deferred.reject err
 
-      res.on 'searchEntry', (entry) ->
-        entries.push entry.object
+      opts = {
+        filter: searchFilter.replace "{{searchTerm}}", searchTerm
+        scope: 'sub'
+        paged: false
+      }
 
-      res.on 'end', (result) ->
+      client.search baseDn, opts, (err, res) ->
 
-        setTimeout ->
-          deferred.resolve entries
-        ,0
+        if err
+          deferred.reject err
+
+        entries = []
+
+        res.on 'error', (err) ->
+          deferred.reject err
+
+        res.on 'searchEntry', (entry) ->
+          entries.push entry.object
+
+        res.on 'end', (result) ->
+
+          setTimeout ->
+            deferred.resolve entries
+          ,0
 
   return deferred.promise
 
 
 
 formatContact = (contact) ->
-  #console.log contact
   return Milk.render(mustacheTpl, contact)
 
 
@@ -93,7 +116,6 @@ module.exports = (currentRobot) ->
 
           for i in [0..numDisplayResults]
             fContact = fContacts[i]
-            #console.log formatContact(fContact)
             results.push formatContact(fContact)
 
           msg.reply results.join("\n\n").trim()
