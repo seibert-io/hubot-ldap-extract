@@ -97,4 +97,4 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should not return any LDAP entries corresponding to search \'non-existing\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 Sorry, I can\'t find any contact matching your search "non-existing\"'
+      expect(@room.messages.pop()[1]).to.eql '@user1 Sorry, I can\'t find any entries matching your search "non-existing\"'

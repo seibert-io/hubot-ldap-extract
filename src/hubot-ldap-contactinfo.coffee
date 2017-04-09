@@ -7,7 +7,7 @@
 #   LDAP_BIND_SECRET - bind password used for LDAP connection
 #   LDAP_SEARCH_BASE_DN - search base for contact information
 #   LDAP_SEARCH_FILTER - search filter to be used, use {{searchTerm}} as placeholder for the user's search query
-#   LDAP_RESULT_MUSTACHE_TPL - Mustache template to be used to present matching information to the user
+#   LDAP_RESULT_TPL - Handlebars template to be used to present matching information to the user (can use helpers from npm handlebards-helpers package)
 #   LDAP_TLSMODE - plain|starttls|tls
 #   LDAP_CA_CERT - CA cert when using tls|starttls
 #
@@ -17,7 +17,9 @@
 
 LDAP = require 'ldapjs'
 Q = require 'q'
-Milk = require 'milk'
+Handlebars = require 'handlebars'
+HandlebarsHelpers = require 'handlebars-helpers'
+
 robot = null
 
 
@@ -29,7 +31,7 @@ bindDn = process.env.LDAP_BIND_DN or "cn=root"
 bindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-mustacheTpl = process.env.LDAP_RESULT_MUSTACHE_TPL or "{{cn}}"
+resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}"
 
 opts = {
   url: ldapURL
@@ -103,7 +105,8 @@ searchLdap = (searchTerm) ->
 
 
 formatResult = (res) ->
-  return Milk.render(mustacheTpl, res)
+  console.log res
+  return resultTpl res
 
 
 module.exports = (currentRobot) ->
@@ -124,8 +127,7 @@ module.exports = (currentRobot) ->
           numDisplayResults = Math.min 5, fEntries.length
 
           for i in [0..numDisplayResults]
-            fEntry = fEntries[i]
-            results.push formatResult(fEntry)
+            results.push formatResult(fEntries[i])
 
           msg.reply results.join("\n\n").trim()
       .fail (err) ->
