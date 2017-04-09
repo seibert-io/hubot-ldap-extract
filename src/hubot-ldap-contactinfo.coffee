@@ -107,7 +107,8 @@ module.exports = (currentRobot) ->
 
   robot.respond /contact (.+)/i, (msg) ->
     sContact = msg.match[1].trim()
-
+    console.log msg
+    console.log sContact
     searchLdap sContact
       .fail (err) ->
         console.error err
