@@ -46,7 +46,7 @@ startTLSIfConfigured = () ->
 
   if tlsMode == "starttls"
     tlsOpts = {
-      cas: [caCert]
+      ca: [caCert]
     }
     client.starttls tlsOpts, [], (err, res) ->
       if err
@@ -97,7 +97,6 @@ searchLdap = (searchTerm) ->
           ,0
 
   return deferred.promise
-
 
 
 formatContact = (contact) ->
