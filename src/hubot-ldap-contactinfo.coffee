@@ -44,11 +44,11 @@ client = LDAP.createClient opts
 startTLSIfConfigured = () ->
   deferred = Q.defer()
 
-  if tlsMode == "starttls"
+  if tlsMode == "starttls" && !client._starttls
     tlsOpts = {
       ca: [caCert]
     }
-    console.log client
+    
     client.starttls tlsOpts, [], (err, res) ->
       if err
         deferred.reject err
