@@ -48,7 +48,7 @@ startTLSIfConfigured = () ->
     tlsOpts = {
       ca: [caCert]
     }
-    
+
     client.starttls tlsOpts, [], (err, res) ->
       if err
         deferred.reject err
@@ -79,6 +79,8 @@ searchLdap = (searchTerm) ->
         paged: false
       }
 
+      console.log opts
+
       client.search baseDn, opts, (err, res) ->
         if err
           deferred.reject err
@@ -100,31 +102,32 @@ searchLdap = (searchTerm) ->
   return deferred.promise
 
 
-formatContact = (contact) ->
-  return Milk.render(mustacheTpl, contact)
+formatResult = (res) ->
+  return Milk.render(mustacheTpl, res)
 
 
 module.exports = (currentRobot) ->
   robot = currentRobot
 
   robot.respond /contact (.+)/i, (msg) ->
-    sContact = msg.match[1].trim()
+    query = msg.match[1].trim()
 
-    searchResult = searchLdap sContact
+    searchResult = searchLdap query
 
     searchResult
-      .then (fContacts) ->
-        if Object.keys(fContacts).length == 0
-          msg.reply "Sorry, I can't find any contact matching your search \"#{sContact}\""
+      .then (fEntries) ->
+        console.log fEntries
+        if Object.keys(fEntries).length == 0
+          msg.reply "Sorry, I can't find any entries matching your search \"#{query}\""
         else
           results = []
-          numDisplayResults = Math.min 5, fContacts.length
+          numDisplayResults = Math.min 5, fEntries.length
 
           for i in [0..numDisplayResults]
-            fContact = fContacts[i]
-            results.push formatContact(fContact)
+            fEntry = fEntries[i]
+            results.push formatResult(fEntry)
 
           msg.reply results.join("\n\n").trim()
       .fail (err) ->
         console.error err
-        msg.reply "Sorry, I can't search for contact information at the moment."
+        msg.reply "Sorry, I can't search the directory at the moment."
