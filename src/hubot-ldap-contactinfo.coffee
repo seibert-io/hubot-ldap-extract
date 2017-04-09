@@ -107,14 +107,15 @@ module.exports = (currentRobot) ->
 
   robot.respond /contact (.+)/i, (msg) ->
     sContact = msg.match[1].trim()
-    console.log msg
+
     console.log sContact
     searchLdap sContact
       .fail (err) ->
+        console.log "ERROR"
         console.error err
         msg.reply "Sorry, I can't search for contact information at the moment."
       .then (fContacts) ->
-
+        console.log "processing reply"
         if Object.keys(fContacts).length == 0
           msg.reply "Sorry, I can't find any contact matching your search \"#{sContact}\""
         else
