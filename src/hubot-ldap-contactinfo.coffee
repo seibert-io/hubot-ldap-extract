@@ -50,6 +50,7 @@ startTLSIfConfigured = () ->
     }
     client.starttls tlsOpts, [], (err, res) ->
       if err
+        console.log err
         deferred.reject err
 
       deferred.resolve true
@@ -110,7 +111,7 @@ module.exports = (currentRobot) ->
     sContact = msg.match[1].trim()
 
     searchResult = searchLdap sContact
-    console.log searchResult
+
     searchResult
       .then (fContacts) ->
         if Object.keys(fContacts).length == 0
