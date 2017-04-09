@@ -48,9 +48,9 @@ startTLSIfConfigured = () ->
     tlsOpts = {
       ca: [caCert]
     }
+    console.log client
     client.starttls tlsOpts, [], (err, res) ->
       if err
-        console.log err
         deferred.reject err
 
       deferred.resolve true
