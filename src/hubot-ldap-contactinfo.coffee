@@ -7,12 +7,15 @@
 #   LDAP_BIND_SECRET - bind password used for LDAP connection
 #   LDAP_SEARCH_BASE_DN - search base for contact information
 #   LDAP_SEARCH_FILTER - search filter to be used, use {{searchTerm}} as placeholder for the user's search query
-#   MUSTACHE_TPL - Mustache template to be used to present matching information to the user
+#   LDAP_RESULT_MUSTACHE_TPL - Mustache template to be used to present matching information to the user
+#   LDAP_TLSMODE - plain|starttls|tls
+#   LDAP_CA_CERT - CA cert when using tls|starttls
+#
 # Commands:
 #   hubot contact <search> - Find contacts matching the seach given query
 #
 
-LDAP = require 'ldapjs'
+LDAP = require 'ldap-client'
 Q = require 'q'
 Milk = require 'milk'
 robot = null
@@ -28,76 +31,48 @@ baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 mustacheTpl = process.env.LDAP_RESULT_MUSTACHE_TPL or "{{cn}}"
 
-opts = {
-  url: ldapURL
-}
 
-if tlsMode == "tls"
-  opts['cas'] = [caCert]
+client = new LDAP {
+    uri:             ldapURL
+    validatecert:    false
+    connecttimeout:  10
+    starttls:        tlsMode == "starttls"
+    base:            baseDn
+    attrs:           '*'
+    filter:          '(objectClass=*)'
+    scope:           LDAP.SUBTREE
+#    connect:         ->
+#      console.log "connected"
+    disconnect:      ->
+      console.info "Disconnected from LDAP"
+}, (err) ->
+  if err
+    console.error err
+    client.bind {
+        binddn: bindDn,
+        password: bindSecret
+    }, (err) ->
+       console.error err
 
-client = LDAP.createClient opts
-
-
-startTLSIfConfigured = () ->
-  deferred = Q.defer()
-  console.log "8"
-  if tlsMode == "starttls"
-    console.log "9"
-    tlsOpts = {
-      cas: [caCert]
-    }
-    client.starttls tlsOpts, [], (err, res) ->
-      console.log "10"
-      if err
-        deferred.reject err
-      console.log "11"
-      deferred.resolve true
-  else
-    console.log "12"
-    deferred.resolve true
-
-  console.log "13"
-  return deferred.promise
 
 searchLdap = (searchTerm) ->
   deferred = Q.defer()
-  console.log "1"
-  startTLSIfConfigured()
-  .fail (err) ->
-    console.log "2"
-    deferred.reject err
-  .then ->
-    console.log "3"
-    client.bind bindDn, bindSecret, (err) ->
-      console.log "4"
-      if err
-        deferred.reject err
-      console.log "5"
-      opts = {
-        filter: searchFilter.replace "{{searchTerm}}", searchTerm
-        scope: 'sub'
-        paged: false
-      }
 
-      client.search baseDn, opts, (err, res) ->
-        console.log "6"
-        if err
-          deferred.reject err
+  search_options = {
+    base: baseDn
+    scope: LDAP.SUBTREE
+    filter: searchFilter.replace "{{searchTerm}}", searchTerm
+    attrs: '*'
+  }
 
-        entries = []
+  client.search search_options, (err, data) ->
+    if err
+      console.error err
 
-        res.on 'error', (err) ->
-          deferred.reject err
+    setTimeout ->
+      deferred.resolve data
+      ,0
 
-        res.on 'searchEntry', (entry) ->
-          entries.push entry.object
-
-        res.on 'end', (result) ->
-
-          setTimeout ->
-            deferred.resolve entries
-          ,0
-  console.log "7"
   return deferred.promise
 
 
@@ -112,15 +87,11 @@ module.exports = (currentRobot) ->
   robot.respond /contact (.+)/i, (msg) ->
     sContact = msg.match[1].trim()
 
-    console.log "-1"
-    console.log searchLdap
     searchLdap sContact
       .fail (err) ->
-        console.log "-2"
         console.error err
         msg.reply "Sorry, I can't search for contact information at the moment."
       .then (fContacts) ->
-        console.log "-3"
         if Object.keys(fContacts).length == 0
           msg.reply "Sorry, I can't find any contact matching your search \"#{sContact}\""
         else

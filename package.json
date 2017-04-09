@@ -1,6 +1,6 @@
 {
   "name": "hubot-ldap-contactinfo",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "An Hubot script that fetches contact information from an LDAP server",
   "main": "index.coffee",
   "repository": {
@@ -19,11 +19,12 @@
   },
   "homepage": "https://github.com/developherr/hubot-ldap-contactinfo",
   "dependencies": {
-    "ldapjs": "^1.0.1",
+    "ldap-client": "^3.1.3",
     "q": "^1.5.0",
     "milk": "^1.2.0"
   },
   "devDependencies": {
+    "ldapjs": "^1.0.1",
     "chai": "^3.5.0",
     "coffee-coverage": "^1.0.1",
     "coffee-script": "^1.12.3",
