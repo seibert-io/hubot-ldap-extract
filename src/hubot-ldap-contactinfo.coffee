@@ -43,40 +43,35 @@ client = LDAP.createClient opts
 
 startTLSIfConfigured = () ->
   deferred = Q.defer()
-  console.log "8"
+
   if tlsMode == "starttls"
-    console.log "9"
     tlsOpts = {
       cas: [caCert]
     }
     client.starttls tlsOpts, [], (err, res) ->
-      console.log "10"
       if err
         deferred.reject err
-      console.log "11"
+
       deferred.resolve true
   else
-    console.log "12"
     deferred.resolve true
 
-  console.log "13"
   return deferred.promise
 
 searchLdap = (searchTerm) ->
-  console.log "1"
   deferred = Q.defer()
 
   startTLSIfConfigured()
   .fail (err) ->
-    console.log "2"
+
     deferred.reject err
   .then ->
-    console.log "3"
+
     client.bind bindDn, bindSecret, (err) ->
-      console.log "4"
+
       if err
         deferred.reject err
-      console.log "5"
+
       opts = {
         filter: searchFilter.replace "{{searchTerm}}", searchTerm
         scope: 'sub'
@@ -84,7 +79,6 @@ searchLdap = (searchTerm) ->
       }
 
       client.search baseDn, opts, (err, res) ->
-        console.log "6"
         if err
           deferred.reject err
 
@@ -101,7 +95,7 @@ searchLdap = (searchTerm) ->
           setTimeout ->
             deferred.resolve entries
           ,0
-  console.log "7"
+
   return deferred.promise
 
 
@@ -116,15 +110,10 @@ module.exports = (currentRobot) ->
   robot.respond /contact (.+)/i, (msg) ->
     sContact = msg.match[1].trim()
 
-    console.log "-1"
-    console.log searchLdap
-    searchLdap sContact
-      .fail (err) ->
-        console.log "-2"
-        console.error err
-        msg.reply "Sorry, I can't search for contact information at the moment."
+    searchResult = searchLdap sContact
+    console.log searchResult
+    searchResult
       .then (fContacts) ->
-        console.log "-3"
         if Object.keys(fContacts).length == 0
           msg.reply "Sorry, I can't find any contact matching your search \"#{sContact}\""
         else
@@ -136,3 +125,6 @@ module.exports = (currentRobot) ->
             results.push formatContact(fContact)
 
           msg.reply results.join("\n\n").trim()
+      .fail (err) ->
+        console.error err
+        msg.reply "Sorry, I can't search for contact information at the moment."
