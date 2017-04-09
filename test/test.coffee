@@ -1,7 +1,8 @@
 Helper = require('hubot-test-helper')
 expect = require('chai').expect
 LDAP = require 'ldapjs'
-Milk = require 'milk'
+Handlebars = require 'handlebars'
+HandlebarsHelpers = require 'handlebars-helpers'
 fs = require 'fs'
 
 helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
@@ -9,7 +10,9 @@ helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
 #process.env['LDAP_TLSMODE'] = "plain"
 process.env['LDAP_SEARCH_FILTER'] = "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 #process.env['LDAP_CA_CERT'] = fs.readFileSync(__dirname + '/certs/ca.pem', 'utf8')
-mustacheTpl = process.env['LDAP_RESULT_MUSTACHE_TPL'] = '{{cn}}';
+tpl = process.env['LDAP_RESULT_TPL'] = '{{cn}}';
+
+tpl = Handlebars.compile tpl, {helpers: HandlebarsHelpers()}
 
 opts = {
   #certificate: fs.readFileSync(__dirname + '/certs/cert.pem', 'utf8')
@@ -79,7 +82,7 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'developherr\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes)
+      expect(@room.messages.pop()[1]).to.eql '@user1 ' + tpl(mockUsers.developherr.attributes)
 
 
   context 'testing successful search with multiple results', ->
@@ -88,7 +91,7 @@ describe 'hubot-ldap-contactinfo', ->
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'evelop\'', ->
-      expect(@room.messages.pop()[1]).to.eql '@user1 ' + Milk.render(mustacheTpl, mockUsers.developherr.attributes) + "\n\n" + Milk.render(mustacheTpl, mockUsers.developer.attributes)
+      expect(@room.messages.pop()[1]).to.eql '@user1 ' + tpl(mockUsers.developherr.attributes) + "\n\n" + tpl(mockUsers.developer.attributes)
 
 
   context 'testing insuccessful search', ->

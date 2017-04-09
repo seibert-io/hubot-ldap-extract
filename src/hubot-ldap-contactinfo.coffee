@@ -31,7 +31,7 @@ bindDn = process.env.LDAP_BIND_DN or "cn=root"
 bindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}"
+resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}", {helpers: HandlebarsHelpers()}
 
 opts = {
   url: ldapURL
@@ -81,8 +81,6 @@ searchLdap = (searchTerm) ->
         paged: false
       }
 
-      console.log opts
-
       client.search baseDn, opts, (err, res) ->
         if err
           deferred.reject err
@@ -119,7 +117,7 @@ module.exports = (currentRobot) ->
 
     searchResult
       .then (fEntries) ->
-        console.log fEntries
+
         if Object.keys(fEntries).length == 0
           msg.reply "Sorry, I can't find any entries matching your search \"#{query}\""
         else
