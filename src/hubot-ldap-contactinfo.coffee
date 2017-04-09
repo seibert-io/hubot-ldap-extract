@@ -135,6 +135,6 @@ module.exports = (currentRobot) ->
             results.push formatResult(fEntries[i])
 
           msg.reply results.join("\n\n").trim()
-      .fail (err) ->
+      .catch (err) ->
         console.error err
         msg.reply "Sorry, I can't search the directory at the moment."
