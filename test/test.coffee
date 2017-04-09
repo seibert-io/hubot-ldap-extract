@@ -1,25 +1,20 @@
 Helper = require('hubot-test-helper')
 expect = require('chai').expect
 LDAP = require 'ldapjs'
+any = require 'any'
 Handlebars = require 'handlebars'
 HandlebarsHelpers = require 'handlebars-helpers'
+
 fs = require 'fs'
 
 helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
 
-#process.env['LDAP_TLSMODE'] = "plain"
-process.env['LDAP_SEARCH_FILTER'] = "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-#process.env['LDAP_CA_CERT'] = fs.readFileSync(__dirname + '/certs/ca.pem', 'utf8')
-tpl = process.env['LDAP_RESULT_TPL'] = '{{cn}}';
 
+process.env['LDAP_SEARCH_FILTER'] = "(&(objectClass=person)(cn=*{{searchTerm}}*))"
+tpl = process.env['LDAP_RESULT_TPL'] = '{{cn}}';
 tpl = Handlebars.compile tpl, {helpers: HandlebarsHelpers()}
 
-opts = {
-  #certificate: fs.readFileSync(__dirname + '/certs/cert.pem', 'utf8')
-  #key: fs.readFileSync(__dirname + '/certs/key.pem', 'utf8')
-}
-
-server = LDAP.createServer(opts)
+server = LDAP.createServer {}
 
 server.bind 'cn=root', (req, res, next) ->
   res.end();
@@ -39,7 +34,7 @@ mockUsers = {
         cn: 'developherr'
         name: 'Firstname'
         lname: 'Lastname'
-        objectclass: 'person'
+        objectClass: ['person', 'testA']
       }
     },
     developer: {
@@ -48,7 +43,7 @@ mockUsers = {
         cn: 'developer'
         name: 'Firstname'
         lname: 'Lastname'
-        objectclass: 'person'
+        objectClass: ['person', 'testB']
       }
     }
 }
@@ -65,7 +60,6 @@ server.search 'o=myhost', [addMockUsers], (req, res, next) ->
 
   res.end();
   return next();
-
 
 describe 'hubot-ldap-contactinfo', ->
   room = null

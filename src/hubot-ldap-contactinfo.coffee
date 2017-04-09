@@ -7,7 +7,7 @@
 #   LDAP_BIND_SECRET - bind password used for LDAP connection
 #   LDAP_SEARCH_BASE_DN - search base for contact information
 #   LDAP_SEARCH_FILTER - search filter to be used, use {{searchTerm}} as placeholder for the user's search query
-#   LDAP_RESULT_TPL - Handlebars template to be used to present matching information to the user (can use helpers from npm handlebards-helpers package)
+#   LDAP_RESULT_TPL - Handlebars template to be used to present matching information to the user (can use helpers from npm handlebards-helpers package + 'any' helper )
 #   LDAP_TLSMODE - plain|starttls|tls
 #   LDAP_CA_CERT - CA cert when using tls|starttls
 #
@@ -17,12 +17,15 @@
 
 LDAP = require 'ldapjs'
 Q = require 'q'
+any = require 'any'
 Handlebars = require 'handlebars'
 HandlebarsHelpers = require 'handlebars-helpers'
 
 robot = null
 
-
+Handlebars.registerHelper 'any', (value, search, options)->
+  if( any value, search)
+    return options.fn(this)
 
 ldapURL = process.env.LDAP_URL or "ldap://127.0.0.1:1389"
 tlsMode = process.env.LDAP_TLSMODE or "plain"
@@ -31,7 +34,11 @@ bindDn = process.env.LDAP_BIND_DN or "cn=root"
 bindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}", {helpers: HandlebarsHelpers()}
+resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}", {helpers: HandlebarsHelpers}
+
+
+
+
 
 opts = {
   url: ldapURL
@@ -103,7 +110,7 @@ searchLdap = (searchTerm) ->
 
 
 formatResult = (res) ->
-  console.log res
+  #console.log res
   return resultTpl res
 
 
