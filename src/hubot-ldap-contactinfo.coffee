@@ -110,7 +110,7 @@ searchLdap = (searchTerm) ->
 
 
 formatResult = (res) ->
-  #console.log res
+  console.log res
   return resultTpl res
 
 
