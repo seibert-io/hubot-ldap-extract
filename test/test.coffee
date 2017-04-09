@@ -6,16 +6,14 @@ fs = require 'fs'
 
 helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
 
-#server_ = LDAP.createServer()
-
-#process.env['LDAP_TLSMODE'] = "starttls"
-mustacheTpl = process.env['LDAP_RESULT_MUSTACHE_TPL'] = '{{cn}}';
+#process.env['LDAP_TLSMODE'] = "plain"
 process.env['LDAP_SEARCH_FILTER'] = "(&(objectclass=person)(cn=*{{searchTerm}}*))"
-process.env['LDAP_CA_CERT'] = fs.readFileSync(__dirname + '/server.crt', 'utf8')
+#process.env['LDAP_CA_CERT'] = fs.readFileSync(__dirname + '/certs/ca.pem', 'utf8')
+mustacheTpl = process.env['LDAP_RESULT_MUSTACHE_TPL'] = '{{cn}}';
 
 opts = {
-  #certificate: fs.readFileSync(__dirname + '/server.crt', 'utf8')
-  #key: fs.readFileSync(__dirname + '/key.pem', 'utf8')
+  #certificate: fs.readFileSync(__dirname + '/certs/cert.pem', 'utf8')
+  #key: fs.readFileSync(__dirname + '/certs/key.pem', 'utf8')
 }
 
 server = LDAP.createServer(opts)
