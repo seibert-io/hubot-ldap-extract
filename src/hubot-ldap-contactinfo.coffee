@@ -111,7 +111,13 @@ searchLdap = (searchTerm) ->
 
 formatResult = (res) ->
   console.log res
-  return resultTpl res
+  try
+    rendered = resultTpl res
+  catch err
+    console.log err
+    rendered = "Sorry, I can't display this result because of a faulty template."
+    
+  return rendered
 
 
 module.exports = (currentRobot) ->
@@ -136,5 +142,5 @@ module.exports = (currentRobot) ->
 
           msg.reply results.join("\n\n").trim()
       .catch (err) ->
-        console.error err
+        console.log err
         msg.reply "Sorry, I can't search the directory at the moment."
