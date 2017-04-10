@@ -1,7 +1,7 @@
 {
   "name": "hubot-ldap-extract",
-  "version": "0.3.8",
-  "description": "An Hubot script that extracts information from an LDAP server",
+  "version": "0.3.10",
+  "description": "A Hubot script that extracts information from an LDAP server",
   "main": "index.coffee",
   "repository": {
     "type": "git",

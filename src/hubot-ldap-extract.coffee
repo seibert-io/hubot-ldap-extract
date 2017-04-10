@@ -1,5 +1,5 @@
 # Description
-#   Fetch contact information from an ldap server
+#   Fetch information from an ldap server
 #
 # Configuration:
 #   LDAP_URL - the URL to the LDAP server
@@ -10,9 +10,10 @@
 #   LDAP_RESULT_TPL - Handlebars template to be used to present matching information to the user (can use helpers from npm handlebards-helpers package + 'any' helper )
 #   LDAP_TLSMODE - plain|starttls|tls
 #   LDAP_CA_CERT - CA cert when using tls|starttls
+#   LDAP_LISTENING_TRIGGER - the keyword to listen to in hubot conversations (can also be set to be a regular expression)
 #
 # Commands:
-#   hubot contact <search> - Find contacts matching the seach given query
+#   hubot directory <search> - Find ldap entries matching the given search query
 #
 
 LDAP = require 'ldapjs'
@@ -35,6 +36,7 @@ bindSecret = process.env.LDAP_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 resultTpl = Handlebars.compile process.env.LDAP_RESULT_TPL or "{{cn}}", {helpers: HandlebarsHelpers()}
+trigger = process.env.LDAP_LISTENING_TRIGGER or "directory"
 
 
 
@@ -122,8 +124,8 @@ formatResult = (res) ->
 module.exports = (currentRobot) ->
   robot = currentRobot
 
-  robot.respond /contact (.+)/i, (msg) ->
-    query = msg.match[1].trim()
+  robot.respond ///#{trigger} (.+)///i, (msg) ->
+    query = msg.match[msg.match.length - 1].trim()
 
     searchResult = searchLdap query
 

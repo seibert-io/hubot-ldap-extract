@@ -7,11 +7,13 @@ HandlebarsHelpers = require 'handlebars-helpers'
 
 fs = require 'fs'
 
-helper = new Helper '../src/hubot-ldap-contactinfo.coffee'
+helper = new Helper '../src/hubot-ldap-extract.coffee'
 
 
 process.env['LDAP_SEARCH_FILTER'] = "(&(objectClass=person)(cn=*{{searchTerm}}*))"
+process.env['LDAP_LISTENING_TRIGGER'] = '(contact|ldap|test-developherr)';
 tpl = process.env['LDAP_RESULT_TPL'] = '{{cn}}';
+
 tpl = Handlebars.compile tpl, {helpers: HandlebarsHelpers()}
 
 server = LDAP.createServer {}
@@ -61,7 +63,7 @@ server.search 'o=myhost', [addMockUsers], (req, res, next) ->
   res.end();
   return next();
 
-describe 'hubot-ldap-contactinfo', ->
+describe 'hubot-ldap-extract', ->
   room = null
 
   beforeEach ->
@@ -81,7 +83,7 @@ describe 'hubot-ldap-contactinfo', ->
 
   context 'testing successful search with multiple results', ->
     beforeEach (done) ->
-      @room.user.say 'user1', 'hubot contact evelop'
+      @room.user.say 'user1', 'hubot ldap evelop'
       setTimeout done, 100
 
     it 'should return LDAP entries corresponding to search \'evelop\'', ->
@@ -90,7 +92,7 @@ describe 'hubot-ldap-contactinfo', ->
 
   context 'testing insuccessful search', ->
     beforeEach (done) ->
-      @room.user.say 'user1', 'hubot contact non-existing'
+      @room.user.say 'user1', 'hubot test-developherr non-existing'
       setTimeout done, 100
 
     it 'should not return any LDAP entries corresponding to search \'non-existing\'', ->
