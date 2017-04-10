@@ -110,7 +110,6 @@ searchLdap = (searchTerm) ->
 
 
 formatResult = (res) ->
-  console.log res
   try
     rendered = resultTpl res
   catch err
