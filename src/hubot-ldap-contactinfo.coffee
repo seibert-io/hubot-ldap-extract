@@ -115,8 +115,8 @@ formatResult = (res) ->
     rendered = resultTpl res
   catch err
     console.log err
-    rendered = "Sorry, I can't display this result because of a faulty template."
-    
+    rendered = "Sorry, I can't display this result because of a faulty template (#{err})."
+
   return rendered
 
 
