@@ -14,7 +14,7 @@
 #   LDAP_EXTRACT_MAXRESULTS - max. no of entries to be returned
 #
 # Commands:
-#   hubot directory <search> - Find ldap entries matching the given search query
+#   hubot ldap <search> - Find directory entries matching the given search query
 #
 
 LDAP = require 'ldapjs'
@@ -37,7 +37,7 @@ bindSecret = process.env.LDAP_EXTRACT_BIND_SECRET or "secret"
 baseDn = process.env.LDAP_EXTRACT_SEARCH_BASE_DN or "o=myhost"
 searchFilter = process.env.LDAP_EXTRACT_SEARCH_FILTER or "(&(objectclass=person)(cn=*{{searchTerm}}*))"
 resultTpl = Handlebars.compile process.env.LDAP_EXTRACT_RESULT_TPL or "{{cn}}", {helpers: HandlebarsHelpers()}
-trigger = process.env.LDAP_EXTRACT_LISTENING_TRIGGER or "directory"
+trigger = process.env.LDAP_EXTRACT_LISTENING_TRIGGER or "ldap"
 maxResults = parseInt(process.env.LDAP_EXTRACT_MAXRESULTS or 5)
 
 

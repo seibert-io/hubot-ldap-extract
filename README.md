@@ -28,7 +28,7 @@ Configure this package by setting its corresponding environment variables:
 - ```LDAP_EXTRACT_RESULT_TPL``` - Handlebars template to be used to present matching information to the user (can use helpers from npm handlebards-helpers package + 'any' helper )
 - ```LDAP_EXTRACT_TLSMODE``` - plain|starttls|tls remember to provide the CA cert if you set this to starttls or tls. If you set this to tls, also make sure to use ldaps:// as the protocol in LDAP_URL
 - ```LDAP_EXTRACT_CA_CERT``` - CA cert when using tls|starttls
-- ```LDAP_EXTRACT_LISTENING_TRIGGER``` - the keyword to listen to in hubot conversations (can also be set to be a regular expression, e.g. ```(directory|info|ldap|contact)```)
+- ```LDAP_EXTRACT_LISTENING_TRIGGER``` - the keyword to listen to in hubot conversations (can also be set to be a regular expression, e.g. ```(directory|info|ldap|contact)```, default: ```ldap```)
 - ```LDAP_EXTRACT_MAXRESULTS``` - max. no of result items returned (default: 5)
 
 ### Response template
@@ -77,4 +77,4 @@ The _any_ helper is being used as a block expression:
 
 ## Usage
 
-```hubot directory <searchquery>```, where _directory_ could be overridden in you particular case via ```LDAP_EXTRACT_LISTENING_TRIGGER```
+```hubot ldap <searchquery>```, where _ldap_ could be overridden in you particular case via ```LDAP_EXTRACT_LISTENING_TRIGGER```
