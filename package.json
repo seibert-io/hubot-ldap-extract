@@ -1,11 +1,11 @@
 {
-  "name": "hubot-ldap-contactinfo",
+  "name": "hubot-ldap-extract",
   "version": "0.3.8",
-  "description": "An Hubot script that fetches contact information from an LDAP server",
+  "description": "An Hubot script that extracts information from an LDAP server",
   "main": "index.coffee",
   "repository": {
     "type": "git",
-    "url": "git://github.com/developherr/hubot-ldap-contactinfo.git"
+    "url": "git://github.com/developherr/hubot-ldap-extract.git"
   },
   "keywords": [
     "hubot",
@@ -15,9 +15,9 @@
   ],
   "author": "developherr <developherr@gmail.com>",
   "bugs": {
-    "url": "https://github.com/developherr/hubot-ldap-contactinfo/issues"
+    "url": "https://github.com/developherr/hubot-ldap-extract/issues"
   },
-  "homepage": "https://github.com/developherr/hubot-ldap-contactinfo",
+  "homepage": "https://github.com/developherr/hubot-ldap-extract",
   "dependencies": {
     "ldapjs": "^1.0.1",
     "handlebars": "^4.0.6",
