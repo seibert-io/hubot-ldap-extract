@@ -142,12 +142,14 @@ module.exports = (currentRobot) ->
           numDisplayResults = Math.min maxResults, fEntries.length
 
           for i in [0..numDisplayResults]
-            results.push formatResult(fEntries[i])
+            formattedResult = formatResult(fEntries[i]).replace /^\s+|\s+$/g, ""
+            if formattedResult.length > 0
+              results.push formattedResult
 
           if numDisplayResults < fEntries.length
             results.push "+ " + (fEntries.length - numDisplayResults) + " more results..."
 
-          msg.reply results.join("\n\n").trim()
+          msg.reply results.join("\n").trim()
       .catch (err) ->
         console.log err
         msg.reply "Sorry, I can't search the directory at the moment."
