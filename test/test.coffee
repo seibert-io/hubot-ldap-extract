@@ -10,9 +10,10 @@ fs = require 'fs'
 helper = new Helper '../src/hubot-ldap-extract.coffee'
 
 
-process.env['LDAP_SEARCH_FILTER'] = "(&(objectClass=person)(cn=*{{searchTerm}}*))"
-process.env['LDAP_LISTENING_TRIGGER'] = '(contact|ldap|test-developherr)';
-tpl = process.env['LDAP_RESULT_TPL'] = '{{cn}}';
+process.env['LDAP_EXTRACT_SEARCH_FILTER'] = "(&(objectClass=person)(cn=*{{searchTerm}}*))"
+process.env['LDAP_EXTRACT_LISTENING_TRIGGER'] = '(contact|ldap|test-developherr)';
+#process.env['LDAP_MAXRESULTS'] = '1';
+tpl = process.env['LDAP_EXTRACT_RESULT_TPL'] = '{{cn}}';
 
 tpl = Handlebars.compile tpl, {helpers: HandlebarsHelpers()}
 
