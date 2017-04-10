@@ -72,6 +72,7 @@ startTLSIfConfigured = () ->
 
   return deferred.promise
 
+
 searchLdap = (searchTerm) ->
   deferred = Q.defer()
 
@@ -87,7 +88,7 @@ searchLdap = (searchTerm) ->
         deferred.reject err
 
       opts = {
-        filter: searchFilter.replace "{{searchTerm}}", searchTerm
+        filter: searchFilter.replace /\{\{searchTerm\}\}/g, searchTerm
         scope: 'sub'
         paged: false
       }
